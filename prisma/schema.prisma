@@ -1,0 +1,129 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  name         String
+  role         String        // "ADMIN", "WHOLESALER", "RETAILER"
+  isApproved   Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  store        Store?
+  orders       Order[]
+  transactions Transaction[]
+  cartItems    CartItem[]
+}
+
+model Store {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  logoUrl     String?
+  ownerId     String    @unique
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  isVerified  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+  paymentProviders PaymentProvider[]
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  sku         String?
+  price       Float       // Wholesale price per unit
+  moq         Int         @default(1) // Minimum Order Quantity
+  packingUnit String      @default("Piece") // e.g. "Box", "Carton", "Piece"
+  stock       Int         @default(0)
+  imageUrl    String?
+  storeId     String
+  store       Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+}
+
+model Order {
+  id                String        @id @default(uuid())
+  retailerId        String
+  retailer          User          @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  status            String        // "PENDING", "ACCEPTED", "PREPARING", "SHIPPED", "DELIVERED", "CANCELLED"
+  total             Float
+  paymentMethod     String        // "CASH_ON_DELIVERY", "WALLET", "BANK_TRANSFER", "MOBILE_WALLET"
+  paymentStatus     String        // "PENDING", "COMPLETED", "FAILED"
+  paymentProviderId String?       
+  paymentProvider   PaymentProvider? @relation(fields: [paymentProviderId], references: [id], onDelete: SetNull)
+  retailerNote      String?
+  sellerReply       String?
+  items             OrderItem[]
+  transactions      Transaction[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float    // Captured unit price at order time
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  amount    Float
+  type      String   // "DEPOSIT", "PAYMENT", "WITHDRAWAL", "REFUND"
+  status    String   // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+  reference String?  // Reference ID/Code from the wallet or bank transfer
+  provider  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentProvider {
+  id          String    @id @default(uuid())
+  name        String
+  accountNumber String?
+  instructions  String?
+  storeId     String?
+  store       Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  orders      Order[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,245 @@
+You are a world-class software architect, fintech engineer, and ISP systems specialist.
+
+Your task is to completely redesign, rebuild, and upgrade an existing Internet Card / ISP Management system into a next-generation enterprise platform called:
+
+SMART ISP MARKETPLACE PLATFORM
+
+This is NOT a simple web app.
+This is a full ecosystem including:
+- Web Application
+- Fully independent Desktop Application (Electron or equivalent)
+- Advanced multi-role dashboards
+- Real-time ISP management system
+- Payment + Wallet + Voucher system
+- MikroTik + RADIUS integration
+
+----------------------------------------------------
+## 1. CORE REQUIREMENTS (VERY IMPORTANT)
+----------------------------------------------------
+
+The system MUST be built as TWO SEPARATE CLIENTS:
+
+### A) Web Application
+- Runs in browser (React or Next.js)
+- Used for:
+  - Network marketplace
+  - User access portal
+  - Captive portal redirect system
+  - Wallet + payments
+  - Viewing networks and purchasing internet packages
+
+### B) Desktop Application (IMPORTANT)
+- Must be a FULL INDEPENDENT ELECTRON APPLICATION
+- NOT a wrapper that depends on live website rendering
+- Must include:
+  - Local authentication storage
+  - Offline caching system
+  - System tray support
+  - Auto start option
+  - Secure token storage
+- Must function even with unstable internet
+- Must be optimized for performance and low resource usage
+
+----------------------------------------------------
+## 2. SYSTEM ARCHITECTURE
+----------------------------------------------------
+
+Backend:
+- Node.js (NestJS preferred)
+- REST API + WebSockets
+
+Database:
+- PostgreSQL (primary)
+- Redis (cache + sessions + real-time data)
+
+Network Layer:
+- MikroTik RouterOS API
+- RADIUS authentication system
+
+Real-time:
+- WebSocket for live updates (users, sessions, alerts)
+
+----------------------------------------------------
+## 3. DASHBOARD SYSTEM (VERY IMPORTANT)
+----------------------------------------------------
+
+### A) Network Owner Dashboard (ISP Owner)
+
+Each network owner must have a powerful control panel:
+
+Features:
+- Create and manage internet packages (speed, time, GB limits)
+- Control pricing of each package
+- Activate / deactivate users
+- View real-time connected users
+- Monitor bandwidth usage
+- Generate voucher cards
+- Set distributor prices
+- View revenue reports
+- Customize store appearance (branding of their network store)
+- Enable/disable payment methods per network
+
+---
+
+### B) Super Admin Dashboard (SYSTEM OWNER - FULL CONTROL)
+
+This is MY (platform owner) dashboard with FULL POWER:
+
+Features:
+- Approve / reject network registrations
+- Suspend / activate any network
+- Modify or delete any network
+- Control all users across system
+- Override pricing rules
+- View global analytics
+- Monitor all transactions
+- Manage disputes and fraud detection
+- Force disconnect users from MikroTik
+- Full permission control system
+
+THIS DASHBOARD MUST HAVE ABSOLUTE ADMIN RIGHTS.
+
+---
+
+## 4. SMART NETWORK STORE SYSTEM
+----------------------------------------------------
+
+Each WiFi network is a digital store.
+
+When a user connects to a WiFi network:
+
+STEP FLOW:
+1. Detect network (SSID + BSSID mapping via captive portal system)
+2. Check if network is registered in system database
+3. If registered:
+   - Automatically redirect user to that network's store page
+   - Show packages, pricing, and purchase options
+4. If NOT registered:
+   - Show message: "This network is not registered"
+   - Suggest nearby registered networks
+
+IMPORTANT:
+- Must use legal captive portal detection methods
+- Must comply with OS restrictions
+
+----------------------------------------------------
+## 5. PAYMENT SYSTEM (VERY IMPORTANT)
+----------------------------------------------------
+
+Implement a full fintech-grade wallet system:
+
+Wallet Features:
+- Deposit balance
+- Withdraw balance
+- Internal transfers
+- Transaction history
+- Unique transaction IDs
+- Real-time balance updates
+
+Payment Methods:
+1. Voucher / prepaid card system (secure one-time codes)
+2. Mobile money integration (extensible API layer)
+3. QR code payments
+4. Manual payment approval system
+5. Admin-approved deposits
+
+Each transaction MUST include:
+- Unique ID
+- Timestamp
+- Status (pending / success / failed)
+- Network association
+
+----------------------------------------------------
+## 6. VOUCHER / CARD SYSTEM
+----------------------------------------------------
+
+- Generate secure random codes
+- One-time use only
+- Expiration support
+- Linked to specific packages
+- Track redemption history
+- Prevent duplication or reuse
+
+----------------------------------------------------
+## 7. REAL-TIME ALERT SYSTEM
+----------------------------------------------------
+
+The system must send:
+
+- Alerts when subscription is about to expire
+- Notifications when balance is low
+- Network outage warnings
+- Payment confirmations
+- Admin alerts for suspicious activity
+
+Channels:
+- In-app notifications
+- Web push notifications
+- Email/SMS (extensible)
+
+----------------------------------------------------
+## 8. DISTRIBUTOR SYSTEM
+----------------------------------------------------
+
+- Multi-level distributor structure
+- Each distributor has:
+  - Dashboard
+  - Assigned networks
+  - Commission tracking
+  - Real-time profit reports
+- Controlled by network owner and super admin
+
+----------------------------------------------------
+## 9. PERFORMANCE & SCALABILITY
+----------------------------------------------------
+
+System must support:
+- 10,000+ concurrent users minimum
+- Real-time updates
+- Low latency APIs (<200ms target)
+- Redis caching layer
+- Horizontal scaling ready architecture
+
+----------------------------------------------------
+## 10. SECURITY REQUIREMENTS
+----------------------------------------------------
+
+- JWT authentication + refresh tokens
+- Role-Based Access Control (RBAC)
+- Secure token storage (desktop app)
+- Rate limiting on APIs
+- Fraud detection system for vouchers
+- Device/session binding
+- MikroTik session protection
+
+----------------------------------------------------
+## 11. OUTPUT REQUIREMENTS
+----------------------------------------------------
+
+You MUST generate:
+
+1. Full system architecture (text diagram)
+2. Backend structure (NestJS or Node.js)
+3. Database schema (PostgreSQL)
+4. API endpoints list
+5. Web application structure (React/Next.js)
+6. Desktop application structure (Electron - fully independent app, NOT web wrapper)
+7. Payment flow diagrams
+8. MikroTik integration flow
+9. Dashboard system design (Admin + Network Owner)
+10. Notification system architecture
+11. Security model explanation
+
+----------------------------------------------------
+## FINAL GOAL
+----------------------------------------------------
+
+Build a production-ready enterprise ISP marketplace platform that is:
+
+- More advanced than existing ISP systems (CardNet-like platforms)
+- Fully scalable
+- Secure and fintech-level robust
+- Real-time and automated
+- Designed for real-world ISP deployment
+
+This system must be at least 70% more advanced than current ISP card management systems.

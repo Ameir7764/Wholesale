@@ -1,0 +1,71 @@
+{
+  "name": "سوق الجملة الذكي - B2B",
+  "short_name": "سوق الجملة",
+  "description": "المنصة الإلكترونية لتوصيل تجار الجملة والموزعين مباشرة بأصحاب البقالات ومحلات التجزئة",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "browser", "minimal-ui"],
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "id": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "الشاشة الرئيسية لسوق الجملة الذكي"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "لوحة تحكم سوق الجملة الذكي"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "سوق التجزئة",
+      "short_name": "السوق",
+      "description": "تصفح المنتجات وسلة التسوق",
+      "url": "/retailer/marketplace",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "لوحة الموزع",
+      "short_name": "الموزع",
+      "description": "إدارة الطلبات والمخزون",
+      "url": "/wholesaler/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/retailer/marketplace",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "categories": ["shopping", "business", "finance"]
+}
