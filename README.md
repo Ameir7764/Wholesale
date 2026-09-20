@@ -1,6 +1,16 @@
 # سوق الجملة الذكي (B2B Wholesale-Retail Marketplace)
 
-منصة تجارة إلكترونية متكاملة لربط موزعي وتجار الجملة (Wholesalers) مباشرة مع أصحاب البقالات والتجزئة (Retailers) تحت إشراف لوحة إدارة عامة (Super Admin) لمعالجة الطلبيات والمبيعات والعمليات المالية.
+منصة تجارة إلكترونية متكاملة لربط موزعي وتجار الجملة (Wholesalers) مباشرة مع أصحاب البقالات والتجزئة (Retailers) تحت إشراف لوحة إدارة عامة (Super Admin) لمعالجة الطلبيات والمبيعات والعمليات المالية، مع دعم كامل لتحويل المنصة إلى تطبيق جوال (PWA / APK).
+
+---
+
+## 🌟 أبرز الميزات المكتملة
+
+- 🛡️ **نظام أمان عالي**: كلمات مرور مشفرة بـ `scrypt` مع Salt عشوائي، جلسات موقعة رقمياً بـ `HMAC SHA-256` عبر `SESSION_SECRET` لمنع الانتحال، وحماية مسارات بالـ `Middleware`.
+- 📱 **تطبيق جوال جاهز (PWA & APK)**: تدعم المنصة التثبيت الفوري كـ Progressive Web App مع دعم الخدمة في الخلفية (`sw.js`) وأيقونات عالية الدقة وقابلة للتحويل إلى ملف `APK` على أندرويد عبر PWABuilder.
+- 🎨 **تصميم عصري ومتجاوب**: تجربة مستخدم سوداء وفخمة (Dark Theme) متوافقة 100% مع الجوال والشاشات المختلفة مع خيارات تمرير سلسة للأشرطة وتنبيهات مخصصة (`Toast`).
+- 👤 **تسجيل حسابات جديدة**: صفحة `/register` تتيح للتجار والبقالات تسجيل حسابات جديدة مع إنشاء سجل متجر تلقائي للتجار واعتماد المشرف.
+- 🔌 **ربط أنظمة الـ ERP**: واجهة برمجية آمنة (`/api/wholesaler/sync-inventory`) لمزامنة المخزون والأسعار مع البرامج المحاسبية الخارجية.
 
 ---
 
@@ -20,14 +30,13 @@
    افتح الرابط: [http://localhost:3000](http://localhost:3000) لتجربة المنصة.
 
 3. **بيانات الدخول التجريبية (Demo Accounts)**:
-   * **تاجر الجملة**: `rawabi@marketplace.com`
-   * **صاحب البقالة**: `baqala_noor@marketplace.com`
-   * **المدير العام**: `admin@marketplace.com`
-   *(يمكنك تسجيل الدخول بالضغط على الروابط الجاهزة بأسفل واجهة الدخول دون إدخال كلمة مرور).*
+   * **تاجر الجملة**: `rawabi@marketplace.com` | كلمة المرور: `wholesaler123`
+   * **صاحب البقالة**: `baqala_noor@marketplace.com` | كلمة المرور: `retailer123`
+   * **المدير العام**: `admin@marketplace.com` | كلمة المرور: `adminpassword123`
 
 ---
 
-## 🛡️ النقل لسوق العمل والإنتاج (PostgreSQL Production)
+## 🛡️ النقل لسوق العمل والإنتاج (PostgreSQL & Vercel)
 
 المنصة مصممة بأعلى معايير جهوزية التشغيل الفعلي (Production-Ready) وتدعم قواعد بيانات **PostgreSQL**.
 
@@ -35,22 +44,22 @@
 قم بنسخ ملف المتغيرات أو كتابة ملف `.env` في المجلد الرئيسي:
 ```env
 DATABASE_URL="postgresql://db_user:db_password@localhost:5432/wholesale_db?schema=public"
+SESSION_SECRET="b2b-wholesale-marketplace-secret-key-2024-production"
 ERP_SECRET_TOKEN="your_secure_erp_token_here"
 NODE_ENV="production"
 ```
 
 ### 2. تهيئة وتحديث قاعدة البيانات (Prisma ORM)
-بمجرد إضافة `DATABASE_URL` سيتعرف خادم التطبيق تلقائياً على خيار PostgreSQL، قم بتنفيذ الأوامر التالية لرفع الجداول وتوليد الجداول الفعلية:
+بمجرد إضافة `DATABASE_URL` سيتعرف خادم التطبيق تلقائياً على خيار PostgreSQL:
 ```bash
 # رفع الجداول وتوزيع الفهارس
 npx prisma db push
 
-# (اختياري) توليد عميل prisma وتجهيز النظام
+# توليد عميل prisma وتجهيز النظام
 npx prisma generate
 ```
 
 ### 3. بناء تطبيق الإنتاج (Production Build)
-لبناء المشروع وتدشينه الفعلي على السيرفر (VPS/Vercel/Render):
 ```bash
 npm run build
 npm run start
@@ -58,36 +67,23 @@ npm run start
 
 ---
 
-## 🔌 ربط نظام الـ ERP للموزعين (المزامنة التلقائية)
+## 📲 تحويل المنصة إلى تطبيق جوال (APK / PWA)
 
-توفر المنصة واجهة ربط برمجية آمنة وموحدة (API Webhook) متوافقة مع جميع برامج الحسابات الخارجية (مثل: يمن سوفت، الأمين، أودو).
+1. **التثبيت المباشر على الجوال (PWA)**:
+   افتح موقعك المرفوع من متصفح الجوال واضغط على **"تثبيت التطبيق / Install App"** لتنزيل التطبيق فوراً على شاشة الجوال الرئيسية.
 
-* **الرابط المعتمد للمزامنة**: `POST /api/wholesaler/sync-inventory`
-* **مثال على جسم الطلب (JSON Request Body)**:
-```json
-{
-  "storeId": "معرف-متجر-التاجر-من-لوحة-التحكم",
-  "secretToken": "رمز_التحقق_المعين_في_ملف_env",
-  "products": [
-    {
-      "sku": "RAW-TUN-01",
-      "stock": 140,
-      "price": 24200.0
-    },
-    {
-      "sku": "RAW-FAS-02",
-      "stock": 60
-    }
-  ]
-}
-```
+2. **إنشاء ملف APK قابل للإرسال**:
+   ادخل على [PWABuilder.com](https://www.pwabuilder.com/)، ضع رابط موقعك المرفوع على Vercel، واضغط على **Package For Stores** -> **Generate Android APK** لتحميل ملف `app-release.apk`.
 
 ---
 
 ## 📂 الهيكل المعماري البرمجي
 
-* `/src/app/actions.ts`: خادم الإجراءات (Server Actions) لمعالجة منطق الشراء وتحديث حالات الطلبات.
-* `/src/lib/db.ts`: نظام محاذاة قواعد البيانات الهجين (Prisma + JSON Fallback).
-* `/src/lib/crypto.ts`: خوارزمية تشفير وتدقيق كلمات المرور (pbkdf2/scrypt).
-* `/src/components/Icons.tsx`: مراجع الرسوم المتجهية (SVG) عالية الأداء للواجهات دون حزم ثقيلة.
-* `/src/styles/variables.css`: رموز التصميم الموحدة (Design Tokens)، الحركات والألوان المتناغمة.
+* `/src/middleware.ts`: حماية المسارات والتحقق من أدوار المستخدمين والجلسات الموقعة.
+* `/src/app/actions.ts`: خادم الإجراءات (Server Actions) لإجراءات الشراء، تسجيل الحسابات وتحديث الطلبات.
+* `/src/lib/auth.ts`: إدارة الجلسات والمصادقة وتوقيع الـ Cookies بـ HMAC.
+* `/src/lib/crypto.ts`: تشفير وتدقيق كلمات المرور بـ scrypt.
+* `/src/lib/db.ts`: محرك قواعد البيانات الهجين (Prisma + JSON Fallback).
+* `/src/components/Toast.tsx`: نظام التنبيهات المنبثقة المخصص.
+* `/src/components/Icons.tsx`: أيقونات SVG عالية الأداء.
+* `/public/manifest.json` & `/public/sw.js`: ملفات دعم وتثبيت تطبيق الجوال الـ PWA.

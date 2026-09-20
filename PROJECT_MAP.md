@@ -1,76 +1,54 @@
-# Project Map - B2B Wholesale-Retail Marketplace (سوق الجملة الذكي)
+# خريطة المشروع الهيكلية (Wholesale Stores B2B)
 
-**Date**: July 2026
-**Role**: Tech Lead / Staff Software Engineer
-**Status**: Fully Completed & Verified
+هذه الخريطة توضح الهيكل النهائي الكامل لمشروع منصة سوق الجملة الذكي.
 
----
-
-## 🛠 TECH_STACK
-
-- **Core Framework**: Next.js 16.2 (App Router)
-- **UI Library**: React 19.2
-- **Language**: TypeScript 5
-- **Styling**: Vanilla CSS Modules + CSS Custom Properties (Variables) & Tailwind CSS v4 (configured via `@tailwindcss/postcss`)
-- **Database ORM**: Prisma (Mock Client fallback for local development)
-- **Database**: local JSON-persisted file database (`prisma/mock_db.json`)
-- **State Management**: React Context & Hooks
-- **Icons**: Custom SVG Icons Component (`src/components/Icons.tsx`)
-
----
-
-## 🔄 SYSTEM_FLOW
-
-```mermaid
-graph TD
-    User([User Guest]) --> Auth[Authentication Page /api/auth]
-    Auth -->|Select Role| RoleGate{Role?}
-    
-    RoleGate -->|WHOLESALER| WS_Dash[Wholesaler Dashboard]
-    RoleGate -->|RETAILER| RT_Market[Retailer Marketplace]
-    RoleGate -->|ADMIN| Admin_Dash[Super Admin Dashboard]
-    
-    subgraph Wholesaler Workflow
-        WS_Dash --> WS_Store[Manage Store Settings]
-        WS_Dash --> WS_Products[Manage Products: MOQ, Packaging, Price]
-        WS_Dash --> WS_Orders[Process Orders: Pending -> Preparing -> Shipped -> Delivered]
-        WS_Dash --> WS_Charts[Sales Analytics Chart]
-    end
-    
-    subgraph Retailer Workflow
-        RT_Market --> RT_Browse[Browse & Search Products]
-        RT_Browse --> RT_Cart[Interactive Cart Drawer]
-        RT_Cart --> RT_Checkout[Checkout & Payment Selector]
-        RT_Checkout --> RT_Payment[Simulated Wallet / Cash on Delivery / Bank Receipt]
-        RT_Payment --> RT_Orders[Track Active Orders & Status]
-    end
-    
-    subgraph Admin Workflow
-        Admin_Dash --> Admin_Verify[Approve/Reject Wholesaler Registrations]
-        Admin_Dash --> Admin_Audit[Platform Transaction Audit Log]
-        Admin_Dash --> Admin_Analytics[Global Platform Revenue & Growth Charts]
-    end
+```text
+Wholesale_Stores/
+├── prisma/
+│   ├── schema.prisma              # مخطط قاعدة البيانات (PostgreSQL Models: User, Store, Product, Category, Order, OrderItem, Transaction)
+│   └── mock_db.json               # قاعدة البيانات التجريبية الهجينة المحلية (JSON Fallback)
+├── public/
+│   ├── manifest.json              # إعدادات تطبيق الجوال الـ PWA كاملة (Icons, Screenshots, Shortcuts, Scope, Display)
+│   ├── sw.js                      # الخدمة في الخلفية (Service Worker) للتصفح والدعم أوفلاين
+│   ├── icon-192.png               # أيقونة تطبيق الجوال (192x192 PNG Maskable)
+│   ├── icon-512.png               # أيقونة تطبيق الجوال (512x512 PNG Maskable)
+│   └── favicon.ico                # أيقونة المتصفح
+├── src/
+│   ├── app/
+│   │   ├── admin/
+│   │   │   └── dashboard/         # لوحة تحكم المشرف العام (إدارة المتاجر، الإيداعات، المستخدمين)
+│   │   ├── wholesaler/
+│   │   │   └── dashboard/         # لوحة تحكم تاجر الجملة (المنتجات، المخزون، الطلبات، مزامنة ERP)
+│   │   ├── retailer/
+│   │   │   └── marketplace/       # سوق البقالات والتجزئة (التصفح، السلة، المحفظة، الطلب)
+│   │   ├── register/              # صفحة تسجيل حساب جديد (تاجر جملة / صاحب بقالة)
+│   │   ├── api/
+│   │   │   ├── admin/approve-deposit/ # واجهة تأكيد الإيداعات المالية
+│   │   │   └── wholesaler/sync-inventory/ # واجهة مزامنة المخزون مع برامج الـ ERP
+│   │   ├── actions.ts             # Server Actions (المصادقة، الشراء، التسجيل، التعديلات)
+│   │   ├── error.tsx              # صفحة الأخطاء العامة
+│   │   ├── loading.tsx            # صفحة التحميل العامة
+│   │   ├── not-found.tsx          # صفحة 404 المخصصة
+│   │   ├── layout.tsx             # الهيكل الرئيسي والتنبيهات
+│   │   └── page.tsx               # صفحة تسجيل الدخول الرئيسية
+│   ├── components/
+│   │   ├── Icons.tsx              # جميع أيقونات الـ SVG عالية الأداء
+│   │   ├── PasswordInput.tsx      # حقل كلمة المرور مع زر إظهار/إخفاء النص
+│   │   ├── ServiceWorkerRegister.tsx # مسجل الـ Service Worker التلقائي
+│   │   └── Toast.tsx              # نظام التنبيهات العائمة المنبثقة المخصص
+│   ├── lib/
+│   │   ├── auth.ts                # نظام إدارة الجلسات والمصادقة وتوقيع الـ Cookies بـ HMAC SHA-256
+│   │   ├── crypto.ts              # خوارزميات التشفير بـ scrypt
+│   │   └── db.ts                  # محرك قاعدة البيانات الهجين (Prisma + JSON Fallback)
+│   └── styles/
+│       ├── globals.css            # أنماط Tailwind وحركات التنبيهات والتصفح
+│       └── variables.css          # رموز وقيم التصميم الموحدة
+├── src/middleware.ts              # حماية المسارات على مستوى Next.js
+├── .babelrc                       # إعدادات Babel لتجاوز مشاكل SWC الناتجة عن نظام Windows
+├── .env                           # المتغيرات البيئية المحلية
+├── .env.example                   # نموذج المتغيرات البيئية
+├── next.config.ts                 # إعدادات Next.js
+├── tailwind.config.js             # إعدادات Tailwind CSS v3
+├── package.json                   # الحزم والسكربتات
+└── README.md                      # التوثيق الشامل ودليل التشغيل والنشر
 ```
-
----
-
-## 📌 ORPHANS & PENDING
-
-### Completed Features
-- [x] Database Schema & Client setup (`src/lib/db.ts` mock DB client)
-- [x] Design System Tokens & variables CSS (`src/styles/variables.css` and font loaders)
-- [x] Global Layout & Common UI Components (Navbar, Custom Buttons, Status Badges)
-- [x] Authentication Mock Engine & Session Context (`src/lib/auth.ts`)
-- [x] Wholesaler Dashboard pages (`/src/app/wholesaler/dashboard`)
-- [x] Retailer Marketplace pages (`/src/app/retailer/marketplace`)
-- [x] Super Admin Dashboard pages (`/src/app/admin/dashboard`)
-- [x] Mock ERP Sync webhook integration (`/src/app/api/wholesaler/sync-inventory`)
-- [x] Verification tests & build verification
-
----
-
-## 🎯 Success Criteria
-1. Full TypeScript compilation without errors: **Verified via npm run build**
-2. Fully responsive, premium-looking dashboards with smooth animations: **Verified**
-3. Clean separation of concerns between Wholesaler, Retailer, and Admin panels: **Verified**
-4. Local mock database successfully created and managed: **Verified**

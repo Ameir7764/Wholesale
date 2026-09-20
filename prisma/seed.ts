@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "../src/lib/crypto";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: "admin@marketplace.com",
-      password: "adminpassword123", // In production, this would be hashed
+      password: hashPassword("adminpassword123"),
       name: "أبو أحمد (المدير العام)",
       role: "ADMIN",
       isApproved: true,
@@ -28,7 +29,7 @@ async function main() {
   const wholesaler1 = await prisma.user.create({
     data: {
       email: "rawabi@marketplace.com",
-      password: "wholesaler123",
+      password: hashPassword("wholesaler123"),
       name: "شركة الروابي التجارية للجملة",
       role: "WHOLESALER",
       isApproved: true,
@@ -38,7 +39,7 @@ async function main() {
   const wholesaler2 = await prisma.user.create({
     data: {
       email: "yemen_dist@marketplace.com",
-      password: "wholesaler123",
+      password: hashPassword("wholesaler123"),
       name: "المؤسسة اليمنية للتوزيع والتجارة",
       role: "WHOLESALER",
       isApproved: true,
@@ -49,7 +50,7 @@ async function main() {
   const retailer1 = await prisma.user.create({
     data: {
       email: "baqala_noor@marketplace.com",
-      password: "retailer123",
+      password: hashPassword("retailer123"),
       name: "صالح العولقي (بقالة النور)",
       role: "RETAILER",
       isApproved: true,
@@ -59,7 +60,7 @@ async function main() {
   const retailer2 = await prisma.user.create({
     data: {
       email: "baqala_baraka@marketplace.com",
-      password: "retailer123",
+      password: hashPassword("retailer123"),
       name: "محمد اليماني (سوبرماركت البركة)",
       role: "RETAILER",
       isApproved: true,
