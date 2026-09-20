@@ -105,7 +105,7 @@ export default function AdminClient({
   users,
   transactions,
   orders,
-  stats
+  stats,
 }: AdminClientProps) {
   const [activeTab, setActiveTab] = useState<"stores" | "transactions" | "orders" | "users">("stores");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -123,7 +123,7 @@ export default function AdminClient({
     }
   };
 
-  const handleApproveUser = async (userId: string, currentStatus: boolean) => {
+  const handleUserApproval = async (userId: string, currentStatus: boolean) => {
     setUpdatingId(userId);
     try {
       await toggleUserApproval(userId, !currentStatus);
@@ -135,12 +135,9 @@ export default function AdminClient({
     }
   };
 
-  // Action to Approve Deposit (Simulated using dynamic Server Action endpoint or local fetch)
   const handleApproveDeposit = async (txId: string) => {
-    if (!confirm("هل تأكدت من وصول الحوالة المالية لحساب البنك وترغب في شحن المحفظة للعميل؟")) return;
     setUpdatingId(txId);
     try {
-      // Send dynamic POST request to a mock router endpoint, or perform direct action
       const res = await fetch("/api/admin/approve-deposit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -161,315 +158,168 @@ export default function AdminClient({
   };
 
   return (
-    <div className="admin-theme min-h-screen text-slate-200 bg-[#080b11] font-sans pb-12" lang="ar" dir="rtl">
+    <div className="flex flex-col min-h-screen text-slate-100 bg-[#070a12] font-sans selection:bg-amber-500 selection:text-slate-950" lang="ar" dir="rtl">
       
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-[#0f1422]/90 border-b border-[#1c2438] shadow-xl backdrop-blur-md px-6 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-center space-x-4 space-x-reverse">
-          <div className="bg-gradient-to-r from-red-600 to-amber-600 text-slate-950 p-2.5 rounded-xl shadow-lg">
-            <Shield className="w-6 h-6 text-white" />
+      {/* Background Orbs */}
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none"></div>
+
+      {/* Header */}
+      <header className="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-4 md:px-8 py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center space-x-3 space-x-reverse">
+          <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-slate-950 p-2.5 rounded-xl shadow-lg shadow-amber-500/20 font-black">
+            <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
-              لوحة الإشراف العام للمنصة
-            </h1>
-            <span className="text-xs text-slate-400 font-medium">سوق الجملة الذكي</span>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-black tracking-tight text-white">لوحة الإشراف العام العليا</h1>
+              <span className="text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">Super Admin</span>
+            </div>
+            <p className="text-xs text-slate-400">إدارة المتاجر والمحافظ والعمليات المالية</p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4 space-x-reverse min-w-0 w-full md:w-auto">
-          {/* Main Navigation */}
-          <div className="flex bg-[#080b11] p-1 rounded-xl border border-[#1c2438] overflow-x-auto flex-nowrap w-full">
+        <div className="flex items-center space-x-3 space-x-reverse min-w-0 w-full md:w-auto overflow-x-auto hide-scrollbar">
+          {/* Navigation Tabs */}
+          <div className="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0">
             <button 
               onClick={() => setActiveTab("stores")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "stores" 
-                  ? "bg-[#0f1422] text-amber-400 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === "stores" ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              <StoreIcon className="w-4 h-4 md:hidden" />
-              <span className="hidden md:inline">المتاجر والطلبات المعلقة ({stats.pendingStoresCount})</span>
+              <StoreIcon className="w-4 h-4" />
+              <span>المتاجر ({stats.pendingStoresCount})</span>
             </button>
             <button 
               onClick={() => setActiveTab("transactions")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "transactions" 
-                  ? "bg-[#0f1422] text-amber-400 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === "transactions" ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              <Wallet className="w-4 h-4 md:hidden" />
-              <span className="hidden md:inline">شحن المحافظ والمراجعات ({stats.pendingDepositsCount})</span>
+              <Wallet className="w-4 h-4" />
+              <span>الإيداعات ({stats.pendingDepositsCount})</span>
             </button>
             <button 
               onClick={() => setActiveTab("orders")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "orders" 
-                  ? "bg-[#0f1422] text-amber-400 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === "orders" ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              <FileText className="w-4 h-4 md:hidden" />
-              <span className="hidden md:inline">سجل المبيعات والطلبات</span>
+              <FileText className="w-4 h-4" />
+              <span>سجل الطلبات ({orders.length})</span>
             </button>
             <button 
               onClick={() => setActiveTab("users")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "users" 
-                  ? "bg-[#0f1422] text-amber-400 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === "users" ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              <Users className="w-4 h-4 md:hidden" />
-              <span className="hidden md:inline">إدارة الأعضاء</span>
+              <Users className="w-4 h-4" />
+              <span>الأعضاء ({users.length})</span>
             </button>
           </div>
 
-          <form action={deauthenticateUser}>
+          <form action={deauthenticateUser} className="shrink-0">
             <button 
               type="submit"
-              className="p-2.5 bg-[#0f1422] hover:bg-red-950/20 text-slate-400 hover:text-red-400 border border-[#1c2438] rounded-xl transition-all cursor-pointer"
+              className="p-2.5 bg-slate-900/90 hover:bg-red-500/10 text-slate-400 hover:text-red-400 border border-slate-800 rounded-xl transition-all cursor-pointer"
               title="تسجيل خروج"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
             </button>
           </form>
         </div>
       </header>
 
-      {/* Main Workspace Container */}
-      <main className="max-w-7xl mx-auto px-6 mt-8 space-y-8">
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-8 relative z-10">
         
-        {/* Statistics Panels */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-          <div className="bg-[#0f1422] border border-[#1c2438] p-5 rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-400 font-bold">حجم مبيعات المنصة</p>
-              <p className="text-xl font-black text-white">{stats.totalVolume.toLocaleString()} <span className="text-xs text-slate-400 font-normal">ر.ي</span></p>
+        {/* KPI Analytics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="glass-card p-5 rounded-2xl border border-slate-800">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs text-slate-400 font-semibold">تجار الجملة المعتمدين</span>
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <StoreIcon className="w-4 h-4" />
+              </div>
             </div>
-            <div className="p-3 bg-amber-500/10 text-amber-500 rounded-xl">
-              <TrendingUp className="w-5 h-5" />
-            </div>
+            <h3 className="text-xl font-black text-blue-400">{stats.wholesalersCount} تاجر</h3>
+            <p className="text-[10px] text-slate-500 mt-1">تجار جملة بالموقع</p>
           </div>
 
-          <div className="bg-[#0f1422] border border-[#1c2438] p-5 rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-400 font-bold">محلات التجزئة (بقالات)</p>
-              <p className="text-xl font-black text-white">{stats.retailersCount}</p>
+          <div className="glass-card p-5 rounded-2xl border border-slate-800">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs text-slate-400 font-semibold">متاجر بانتظار الاعتماد</span>
+              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <Clock className="w-4 h-4" />
+              </div>
             </div>
-            <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl">
-              <Users className="w-5 h-5" />
-            </div>
+            <h3 className="text-xl font-black text-amber-400">{stats.pendingStoresCount} طلبات</h3>
+            <p className="text-[10px] text-slate-500 mt-1">تحتاج موافقة المشرف</p>
           </div>
 
-          <div className="bg-[#0f1422] border border-[#1c2438] p-5 rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-400 font-bold">تجار الجملة والموزعين</p>
-              <p className="text-xl font-black text-white">{stats.wholesalersCount}</p>
+          <div className="glass-card p-5 rounded-2xl border border-slate-800">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs text-slate-400 font-semibold">إيداعات بانتظار الشحن</span>
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <Wallet className="w-4 h-4" />
+              </div>
             </div>
-            <div className="p-3 bg-purple-500/10 text-purple-400 rounded-xl">
-              <StoreIcon className="w-5 h-5" />
-            </div>
+            <h3 className="text-xl font-black text-emerald-400">{stats.pendingDepositsCount} طلبات</h3>
+            <p className="text-[10px] text-slate-500 mt-1">طلبات شحن المحافظ</p>
           </div>
 
-          <div className="bg-[#0f1422] border border-[#1c2438] p-5 rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-400 font-bold">متاجر بانتظار الاعتماد</p>
-              <p className={`text-xl font-black ${stats.pendingStoresCount > 0 ? "text-amber-500" : "text-slate-400"}`}>{stats.pendingStoresCount}</p>
+          <div className="glass-card p-5 rounded-2xl border border-slate-800">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs text-slate-400 font-semibold">إجمالي حجم المبيعات</span>
+              <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <TrendingUp className="w-4 h-4" />
+              </div>
             </div>
-            <div className={`p-3 rounded-xl ${stats.pendingStoresCount > 0 ? "bg-amber-500/10 text-amber-400" : "bg-slate-500/10 text-slate-400"}`}>
-              <StoreIcon className="w-5 h-5" />
-            </div>
-          </div>
-
-          <div className="bg-[#0f1422] border border-[#1c2438] p-5 rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-400 font-bold">إيداعات بانتظار التأكيد</p>
-              <p className={`text-xl font-black ${stats.pendingDepositsCount > 0 ? "text-red-400 animate-pulse" : "text-slate-400"}`}>{stats.pendingDepositsCount}</p>
-            </div>
-            <div className={`p-3 rounded-xl ${stats.pendingDepositsCount > 0 ? "bg-red-500/10 text-red-400" : "bg-slate-500/10 text-slate-400"}`}>
-              <Wallet className="w-5 h-5" />
-            </div>
+            <h3 className="text-xl font-black text-purple-400">{stats.totalVolume.toLocaleString()} ر.ي</h3>
+            <p className="text-[10px] text-slate-500 mt-1">حجم تداولات المنصة الكلي</p>
           </div>
         </div>
 
-        {/* Tab Switchboard */}
+        {/* Tab 1: Stores List */}
         {activeTab === "stores" && (
-          <div className="bg-[#0f1422] border border-[#1c2438] rounded-2xl p-6 space-y-6">
-            <div>
-              <h2 className="text-lg font-bold text-white">إعتماد وتوثيق المتاجر (تجار الجملة)</h2>
-              <p className="text-xs text-slate-400 mt-1">يجب على تجار الجملة الجدد الحصول على موافقتكم ليتمكنوا من عرض منتجاتهم في السوق.</p>
+          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white">إدارة اعتماد متاجر الجملة</h2>
+                <p className="text-xs text-slate-400 mt-1">اعتمد المتاجر لتظهر بضائعهم تلقائياً لأصحاب البقالات</p>
+              </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-right border-collapse">
-                <thead>
-                  <tr className="border-b border-[#1c2438] text-xs font-bold text-slate-400 uppercase tracking-wider pb-3">
-                    <th className="pb-3">اسم المتجر</th>
-                    <th className="pb-3">المالك</th>
-                    <th className="pb-3">البريد الإلكتروني</th>
-                    <th className="pb-3">تاريخ التسجيل</th>
-                    <th className="pb-3">الحالة</th>
-                    <th className="pb-3 text-left">التحكم</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1c2438]">
-                  {stores.map((store) => (
-                    <tr key={store.id} className="text-sm font-semibold text-slate-300">
-                      <td className="py-4 font-bold text-white flex items-center gap-2">
-                        <span className="p-2 bg-[#1c2438] rounded-lg"><StoreIcon className="w-4 h-4 text-slate-400" /></span>
-                        {store.name}
-                      </td>
-                      <td className="py-4">{store.owner.name}</td>
-                      <td className="py-4 text-xs font-mono">{store.owner.email}</td>
-                      <td className="py-4 text-xs">
-                        {new Date(store.createdAt).toLocaleDateString("ar-YE")}
-                      </td>
-                      <td className="py-4">
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded border ${
-                          store.isVerified
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                        }`}>
-                          {store.isVerified ? "موزع معتمد" : "غير نشط/تحت المراجعة"}
-                        </span>
-                      </td>
-                      <td className="py-4 text-left">
-                        <button
-                          onClick={() => handleVerifyStore(store.id, store.isVerified)}
-                          disabled={updatingId === store.id}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                            store.isVerified
-                              ? "bg-red-950/40 hover:bg-red-950/60 text-red-400 border border-red-900/40"
-                              : "bg-emerald-600 hover:bg-emerald-700 text-slate-950"
-                          }`}
-                        >
-                          {store.isVerified ? "إلغاء الاعتماد" : "اعتماد وتفعيل المتجر"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "transactions" && (
-          <div className="bg-[#0f1422] border border-[#1c2438] rounded-2xl p-6 space-y-6">
-            <div>
-              <h2 className="text-lg font-bold text-white">طلبات شحن المحافظ والعمليات المالية</h2>
-              <p className="text-xs text-slate-400 mt-1">قم بتدقيق الحوالات المصرفية المكتوبة من العملاء والموافقة عليها لشحن أرصدتهم فوراً.</p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-right border-collapse">
-                <thead>
-                  <tr className="border-b border-[#1c2438] text-xs font-bold text-slate-400 uppercase tracking-wider pb-3">
-                    <th className="pb-3">المستخدم</th>
-                    <th className="pb-3">نوع العملية</th>
-                    <th className="pb-3">المبلغ</th>
-                    <th className="pb-3">المرجع / كود التحويل</th>
-                    <th className="pb-3">تاريخ الطلب</th>
-                    <th className="pb-3">الحالة</th>
-                    <th className="pb-3 text-left">التحكم</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1c2438]">
-                  {transactions.map((tx) => (
-                    <tr key={tx.id} className="text-sm font-semibold text-slate-300">
-                      <td className="py-4">
-                        <p className="text-white font-bold">{tx.user.name}</p>
-                        <p className="text-[10px] text-slate-500 font-mono">{tx.user.email}</p>
-                      </td>
-                      <td className="py-4">
-                        <span className={`text-xs ${tx.type === "DEPOSIT" ? "text-emerald-400" : "text-blue-400"}`}>
-                          {tx.type === "DEPOSIT" ? "إيداع (شحن محفظة)" : "شراء بضاعة"}
-                        </span>
-                      </td>
-                      <td className="py-4 font-black text-white">{tx.amount.toLocaleString()} ر.ي</td>
-                      <td className="py-4 text-xs font-mono font-bold text-amber-500">{tx.reference || "بدون مرجع"}</td>
-                      <td className="py-4 text-xs">
-                        {new Date(tx.createdAt).toLocaleString("ar-YE")}
-                      </td>
-                      <td className="py-4">
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded border ${
-                          tx.status === "COMPLETED"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : tx.status === "PENDING"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            : "bg-red-500/10 text-red-400 border-red-500/20"
-                        }`}>
-                          {tx.status === "PENDING" && "تحت التدقيق"}
-                          {tx.status === "COMPLETED" && "مكتملة ومقبولة"}
-                          {tx.status === "REJECTED" && "مرفوضة"}
-                        </span>
-                      </td>
-                      <td className="py-4 text-left">
-                        {tx.type === "DEPOSIT" && tx.status === "PENDING" && (
-                          <button
-                            onClick={() => handleApproveDeposit(tx.id)}
-                            disabled={updatingId === tx.id}
-                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-slate-950 font-bold text-xs rounded-lg transition-colors cursor-pointer"
-                          >
-                            تأكيد الحوالة وشحن المحفظة
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "orders" && (
-          <div className="bg-[#0f1422] border border-[#1c2438] rounded-2xl p-6 space-y-6">
-            <h2 className="text-lg font-bold text-white">سجل كافة الطلبات والمبيعات على المنصة</h2>
-            
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <div key={order.id} className="bg-[#151b2d]/40 border border-[#1c2438] rounded-xl overflow-hidden">
-                  <div className="bg-[#0f1422] px-6 py-4 flex justify-between items-center border-b border-[#1c2438]">
-                    <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-bold">بقالة المشتري</p>
-                      <p className="text-sm font-bold text-white">{order.retailer.name}</p>
+            <div className="space-y-3">
+              {stores.map((st) => (
+                <div key={st.id} className="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl ${st.isVerified ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
+                      <StoreIcon className="w-5 h-5" />
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-bold">الإجمالي الكلي</p>
-                      <p className="text-sm font-black text-amber-500">{order.total.toLocaleString()} ر.ي</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-bold">طريقة الدفع</p>
-                      <p className="text-xs text-slate-300">{order.paymentMethod === "WALLET" ? "محفظة رقمية" : "دفع كاش عند الاستلام"}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-bold">حالة التوصيل</p>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                        order.status === "DELIVERED"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-amber-500/10 text-amber-400"
-                      }`}>
-                        {order.status === "PENDING" && "قيد الانتظار"}
-                        {order.status === "ACCEPTED" && "مقبول لدى التاجر"}
-                        {order.status === "PREPARING" && "قيد التجهيز"}
-                        {order.status === "SHIPPED" && "قيد التوصيل"}
-                        {order.status === "DELIVERED" && "مكتمل ومسلم"}
-                      </span>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">{st.name}</h4>
+                      <p className="text-xs text-slate-400">المالك: {st.owner.name} ({st.owner.email})</p>
                     </div>
                   </div>
 
-                  <div className="p-4">
-                    <ul className="text-xs space-y-2 text-slate-400">
-                      {order.items.map((item) => (
-                        <li key={item.id} className="flex justify-between">
-                          <span>• {item.product.name} (عدد {item.quantity} {item.product.packingUnit})</span>
-                          <span className="text-slate-300 font-bold">المورد: {item.product.store.name}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${st.isVerified ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20"}`}>
+                      {st.isVerified ? "معتمد ورسمي" : "قيد المراجعة"}
+                    </span>
+                    <button
+                      onClick={() => handleVerifyStore(st.id, st.isVerified)}
+                      disabled={updatingId === st.id}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        st.isVerified 
+                          ? "bg-slate-900 text-red-400 border border-slate-800 hover:bg-red-500/10" 
+                          : "btn-amber"
+                      }`}
+                    >
+                      {st.isVerified ? "إلغاء الاعتماد" : "اعتماد المتجر الآن"}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -477,61 +327,123 @@ export default function AdminClient({
           </div>
         )}
 
+        {/* Tab 2: Deposit Approvals */}
+        {activeTab === "transactions" && (
+          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6 animate-fade-in">
+            <div>
+              <h2 className="text-lg font-bold text-white">مراجعة وإعتماد الإيداعات المالية (شحن المحافظ)</h2>
+              <p className="text-xs text-slate-400 mt-1">تأكد من رقم المرجع والمبلغ قبل الموافقة على شحن حساب صاحب البقالة</p>
+            </div>
+
+            <div className="space-y-3">
+              {transactions.filter(t => t.type === "DEPOSIT").map((tx) => (
+                <div key={tx.id} className="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl ${tx.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
+                      <Wallet className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">{tx.user.name} ({tx.user.email})</h4>
+                      <p className="text-xs font-mono text-amber-400 mt-0.5">مرجع الإيداع: {tx.reference || "بدون مرجع"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-left">
+                      <p className="text-base font-black text-emerald-400">+{tx.amount.toLocaleString()} ر.ي</p>
+                      <span className="text-[10px] text-slate-400">{new Date(tx.createdAt).toLocaleDateString("ar-YE")}</span>
+                    </div>
+
+                    {tx.status === "PENDING" ? (
+                      <button
+                        onClick={() => handleApproveDeposit(tx.id)}
+                        disabled={updatingId === tx.id}
+                        className="btn-amber px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"
+                      >
+                        تأكيد وشحن المحفظة
+                      </button>
+                    ) : (
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                        تم الشحن
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: System Orders */}
+        {activeTab === "orders" && (
+          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6 animate-fade-in">
+            <div>
+              <h2 className="text-lg font-bold text-white">سجل جميع طلبات ومبيعات المنصة</h2>
+              <p className="text-xs text-slate-400 mt-1">متابعة دقيقة لكافة الطلبات المتبادلة بين التجار والبقالات</p>
+            </div>
+
+            <div className="space-y-4">
+              {orders.map((order) => (
+                <div key={order.id} className="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                  <div className="bg-slate-900/80 px-6 py-4 border-b border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-slate-400">العميل:</span> <strong className="text-white">{order.retailer.name}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">إجمالي الطلب:</span> <strong className="text-amber-400">{order.total.toLocaleString()} ر.ي</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">الحالة:</span> <strong className="text-blue-400">{order.status}</strong>
+                    </div>
+                  </div>
+                  <div className="p-4 text-xs space-y-1">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-slate-300">
+                        <span>• {item.product.name} ({item.product.store.name})</span>
+                        <span>{item.quantity} {item.product.packingUnit} × {item.price.toLocaleString()} ر.ي</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: User Accounts */}
         {activeTab === "users" && (
-          <div className="bg-[#0f1422] border border-[#1c2438] rounded-2xl p-6 space-y-6">
-            <h2 className="text-lg font-bold text-white">إدارة حسابات الأعضاء والتحكم بالصلاحيات</h2>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-right border-collapse">
-                <thead>
-                  <tr className="border-b border-[#1c2438] text-xs font-bold text-slate-400 uppercase tracking-wider pb-3">
-                    <th className="pb-3">الاسم بالكامل</th>
-                    <th className="pb-3">البريد الإلكتروني</th>
-                    <th className="pb-3">الدور الممنوح</th>
-                    <th className="pb-3">حالة الحساب</th>
-                    <th className="pb-3 text-left">التحكم</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1c2438]">
-                  {users.map((u) => (
-                    <tr key={u.id} className="text-sm font-semibold text-slate-300">
-                      <td className="py-4 font-bold text-white">{u.name}</td>
-                      <td className="py-4 text-xs font-mono">{u.email}</td>
-                      <td className="py-4 text-xs">
-                        <span className={`px-2 py-0.5 rounded border font-bold text-[10px] ${
-                          u.role === "ADMIN" 
-                            ? "bg-red-500/10 text-red-400 border-red-500/20" 
-                            : u.role === "WHOLESALER" 
-                            ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                        }`}>
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="py-4 text-xs">
-                        <span className={`font-bold ${u.isApproved ? "text-emerald-400" : "text-red-400"}`}>
-                          {u.isApproved ? "مفعّل ونشط" : "موقوف مؤقتاً"}
-                        </span>
-                      </td>
-                      <td className="py-4 text-left">
-                        {u.role !== "ADMIN" && (
-                          <button
-                            onClick={() => handleApproveUser(u.id, u.isApproved)}
-                            disabled={updatingId === u.id}
-                            className={`px-3 py-1 text-xs rounded transition-all cursor-pointer font-bold ${
-                              u.isApproved
-                                ? "bg-red-950/30 hover:bg-red-950/50 text-red-400 border border-red-900/30"
-                                : "bg-emerald-600 hover:bg-emerald-700 text-slate-950"
-                            }`}
-                          >
-                            {u.isApproved ? "حظر مؤقت" : "تفعيل الحساب"}
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6 animate-fade-in">
+            <div>
+              <h2 className="text-lg font-bold text-white">إدارة أعضاء وحسابات النظام</h2>
+              <p className="text-xs text-slate-400 mt-1">تفعيل أو تعليق وصول المستخدمين</p>
+            </div>
+
+            <div className="space-y-3">
+              {users.map((usr) => (
+                <div key={usr.id} className="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">{usr.name}</h4>
+                      <p className="text-xs text-slate-400">{usr.email} | دور: <span className="text-amber-400 font-bold">{usr.role}</span></p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleUserApproval(usr.id, usr.isApproved)}
+                    disabled={updatingId === usr.id}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      usr.isApproved 
+                        ? "bg-slate-900 text-emerald-400 border border-emerald-500/30" 
+                        : "btn-amber"
+                    }`}
+                  >
+                    {usr.isApproved ? "حساب مفعل (إيقاف)" : "تفعيل الحساب الآن"}
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}
