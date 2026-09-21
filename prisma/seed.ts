@@ -14,12 +14,16 @@ async function main() {
   await prisma.user.deleteMany();
 
   console.log("Creating users...");
+  const adminPassword = process.env.DEMO_ADMIN_PASSWORD || "Admin@SecurePass2026!";
+  const wholesalerPassword = process.env.DEMO_WHOLESALER_PASSWORD || "Wholesaler@Pass2026!";
+  const retailerPassword = process.env.DEMO_RETAILER_PASSWORD || "Retailer@Pass2026!";
+
   // Create Super Admin
   const admin = await prisma.user.create({
     data: {
       email: "admin@marketplace.com",
-      password: hashPassword("adminpassword123"),
-      name: "أبو أحمد (المدير العام)",
+      password: hashPassword(adminPassword),
+      name: "مدير المنصة (Super Admin)",
       role: "ADMIN",
       isApproved: true,
     },
@@ -29,7 +33,7 @@ async function main() {
   const wholesaler1 = await prisma.user.create({
     data: {
       email: "rawabi@marketplace.com",
-      password: hashPassword("wholesaler123"),
+      password: hashPassword(wholesalerPassword),
       name: "شركة الروابي التجارية للجملة",
       role: "WHOLESALER",
       isApproved: true,
@@ -39,7 +43,7 @@ async function main() {
   const wholesaler2 = await prisma.user.create({
     data: {
       email: "yemen_dist@marketplace.com",
-      password: hashPassword("wholesaler123"),
+      password: hashPassword(wholesalerPassword),
       name: "المؤسسة اليمنية للتوزيع والتجارة",
       role: "WHOLESALER",
       isApproved: true,
@@ -50,7 +54,7 @@ async function main() {
   const retailer1 = await prisma.user.create({
     data: {
       email: "baqala_noor@marketplace.com",
-      password: hashPassword("retailer123"),
+      password: hashPassword(retailerPassword),
       name: "صالح العولقي (بقالة النور)",
       role: "RETAILER",
       isApproved: true,
@@ -60,7 +64,7 @@ async function main() {
   const retailer2 = await prisma.user.create({
     data: {
       email: "baqala_baraka@marketplace.com",
-      password: hashPassword("retailer123"),
+      password: hashPassword(retailerPassword),
       name: "محمد اليماني (سوبرماركت البركة)",
       role: "RETAILER",
       isApproved: true,

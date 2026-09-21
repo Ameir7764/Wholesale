@@ -98,7 +98,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-// Seeded In-Memory Database Fallback for Vercel when DATABASE_URL is not configured
+// Demo-only: In-memory fallback database used when DATABASE_URL is not configured.
+// Demo credentials are read from environment variables to avoid hardcoding secrets in source.
+const DEMO_WHOLESALER_PASS = process.env.DEMO_WHOLESALER_PASSWORD || "change_me";
+const DEMO_RETAILER_PASS = process.env.DEMO_RETAILER_PASSWORD || "change_me";
+const DEMO_ADMIN_PASS = process.env.DEMO_ADMIN_PASSWORD || "change_me";
+
 const inMemoryData: {
   users: any[];
   stores: any[];
@@ -113,7 +118,7 @@ const inMemoryData: {
     {
       id: "u-wholesaler-1",
       email: "rawabi@marketplace.com",
-      password: hashPassword("wholesaler123"),
+      password: hashPassword(DEMO_WHOLESALER_PASS),
       name: "شركة الروابي للتجارة بالجملة",
       role: "WHOLESALER",
       isApproved: true,
@@ -122,7 +127,7 @@ const inMemoryData: {
     {
       id: "u-retailer-1",
       email: "baqala_noor@marketplace.com",
-      password: hashPassword("retailer123"),
+      password: hashPassword(DEMO_RETAILER_PASS),
       name: "بقالة النور للتجزئة",
       role: "RETAILER",
       isApproved: true,
@@ -131,8 +136,8 @@ const inMemoryData: {
     {
       id: "u-admin-1",
       email: "admin@marketplace.com",
-      password: hashPassword("adminpassword123"),
-      name: "مدير المنصة (م/أمير علي)",
+      password: hashPassword(DEMO_ADMIN_PASS),
+      name: "مدير المنصة",
       role: "ADMIN",
       isApproved: true,
       createdAt: new Date().toISOString(),

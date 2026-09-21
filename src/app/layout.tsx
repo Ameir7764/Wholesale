@@ -26,6 +26,7 @@ export const metadata: Metadata = {
 };
 
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { FloatingDock } from "@/components/FloatingDock";
 
 export default function RootLayout({
   children,
@@ -48,7 +49,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#0b0f19] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950">
         <ServiceWorkerRegister />
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          {children}
+          <FloatingDock />
+        </ToastProvider>
       </body>
     </html>
   );

@@ -11,10 +11,15 @@ export interface UserSession {
   isApproved: boolean;
 }
 
-const DEFAULT_SESSION_SECRET = "b2b-wholesale-secret-production-key-2026-fallback-secure-hash";
-
-function getSessionSecret() {
-  return process.env.SESSION_SECRET || DEFAULT_SESSION_SECRET;
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    throw new Error(
+      "SESSION_SECRET environment variable is required. " +
+      "Generate one with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\""
+    );
+  }
+  return secret;
 }
 
 function signSession(data: string): string {

@@ -81,3 +81,14 @@ next-env.d.ts
 # scratch scripts
 scratch/
 
+# Sensitive analysis & internal planning files
+production_analysis.md
+الخطط/
+برومت/
+
+# Log files (prisma, build, etc.)
+*.log
+
+# Debug/temp files
+terminal_check.txt
+

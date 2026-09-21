@@ -44,9 +44,7 @@ Wholesale_Stores/
 │       ├── globals.css            # أنماط Tailwind وحركات التنبيهات والتصفح
 │       └── variables.css          # رموز وقيم التصميم الموحدة
 ├── src/middleware.ts              # حماية المسارات على مستوى Next.js
-├── .babelrc                       # إعدادات Babel لتجاوز مشاكل SWC الناتجة عن نظام Windows
-├── .env                           # المتغيرات البيئية المحلية
-├── .env.example                   # نموذج المتغيرات البيئية
+├── .env.example                   # نموذج المتغيرات البيئية المرجعي (Template)
 ├── next.config.ts                 # إعدادات Next.js
 ├── tailwind.config.js             # إعدادات Tailwind CSS v3
 ├── package.json                   # الحزم والسكربتات

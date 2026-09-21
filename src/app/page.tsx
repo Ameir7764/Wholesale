@@ -166,7 +166,8 @@ export default async function LoginPage() {
               </a>
             </div>
 
-            {/* Collapsible Quick Demo Helpers */}
+            {/* Collapsible Quick Demo Helpers — Only in Development */}
+            {process.env.NODE_ENV !== "production" && (
             <details className="mt-6 pt-5 border-t border-slate-800/80 group">
               <summary className="text-xs font-medium text-slate-400 hover:text-slate-200 cursor-pointer flex items-center justify-between transition-colors select-none">
                 <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
@@ -179,7 +180,7 @@ export default async function LoginPage() {
                 {/* Demo Wholesaler */}
                 <form action={async () => {
                   "use server";
-                  await authenticateUser("rawabi@marketplace.com", "wholesaler123");
+                  await authenticateUser("rawabi@marketplace.com", process.env.DEMO_WHOLESALER_PASSWORD || "");
                 }}>
                   <button
                     type="submit"
@@ -203,7 +204,7 @@ export default async function LoginPage() {
                 {/* Demo Retailer */}
                 <form action={async () => {
                   "use server";
-                  await authenticateUser("baqala_noor@marketplace.com", "retailer123");
+                  await authenticateUser("baqala_noor@marketplace.com", process.env.DEMO_RETAILER_PASSWORD || "");
                 }}>
                   <button
                     type="submit"
@@ -227,7 +228,7 @@ export default async function LoginPage() {
                 {/* Demo Admin */}
                 <form action={async () => {
                   "use server";
-                  await authenticateUser("admin@marketplace.com", "adminpassword123");
+                  await authenticateUser("admin@marketplace.com", process.env.DEMO_ADMIN_PASSWORD || "");
                 }}>
                   <button
                     type="submit"
@@ -249,6 +250,7 @@ export default async function LoginPage() {
                 </form>
               </div>
             </details>
+            )}
 
           </div>
         </div>
