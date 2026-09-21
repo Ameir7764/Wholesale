@@ -545,8 +545,8 @@ export async function registerUser(formData: {
   if (!["WHOLESALER", "RETAILER"].includes(role)) {
     throw new Error("نوع الحساب غير صحيح.");
   }
-  if (password.length < 8) {
-    throw new Error("كلمة المرور يجب أن تتكون من 8 أحرف على الأقل.");
+  if (password.length < 6) {
+    throw new Error("كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.");
   }
   if (role === "WHOLESALER" && !storeName) {
     throw new Error("اسم المتجر مطلوب لتجار الجملة.");
@@ -563,7 +563,7 @@ export async function registerUser(formData: {
       email,
       password: hashPassword(password),
       role,
-      isApproved: false,
+      isApproved: true,
     },
   });
 
@@ -572,6 +572,7 @@ export async function registerUser(formData: {
       data: {
         name: storeName,
         ownerId: user.id,
+        isVerified: true,
       },
     });
   }
