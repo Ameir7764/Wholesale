@@ -23,6 +23,7 @@ import {
 } from "@/components/Icons";
 import { deauthenticateUser, addProduct, editProduct, removeProduct, changeOrderStatus } from "@/app/actions";
 import { useToast } from "@/components/Toast";
+import { TaxInvoiceModal } from "@/components/TaxInvoiceModal";
 
 interface Product {
   id: string;
@@ -109,6 +110,7 @@ export default function WholesalerClient({
   const [orderFilter, setOrderFilter] = useState<string>("ALL");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const { showToast } = useToast();
 
@@ -121,11 +123,27 @@ export default function WholesalerClient({
     moq: "1",
     packingUnit: "كرتون",
     stock: "100",
+    imageUrl: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("حجم الصورة يجب أن لا يتجاوز 5 ميجابايت.", "warning");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -139,9 +157,10 @@ export default function WholesalerClient({
         moq: parseInt(formData.moq, 10),
         packingUnit: formData.packingUnit,
         stock: parseInt(formData.stock, 10),
+        imageUrl: formData.imageUrl || null,
       });
       setIsAddModalOpen(false);
-      setFormData({ name: "", description: "", sku: "", price: "", moq: "1", packingUnit: "كرتون", stock: "100" });
+      setFormData({ name: "", description: "", sku: "", price: "", moq: "1", packingUnit: "كرتون", stock: "100", imageUrl: "" });
       showToast("تمت إضافة المنتج بنجاح إلى متجرك.", "success");
     } catch (err: any) {
       showToast(err.message || "حدث خطأ أثناء إضافة المنتج.", "error");
@@ -160,6 +179,7 @@ export default function WholesalerClient({
         moq: parseInt(formData.moq, 10),
         packingUnit: formData.packingUnit,
         stock: parseInt(formData.stock, 10),
+        imageUrl: formData.imageUrl || null,
       });
       setEditingProduct(null);
       showToast("تم تحديث بيانات المنتج بنجاح.", "success");
@@ -335,7 +355,7 @@ export default function WholesalerClient({
               </div>
               <button
                 onClick={() => {
-                  setFormData({ name: "", description: "", sku: "", price: "", moq: "1", packingUnit: "كرتون", stock: "100" });
+                  setFormData({ name: "", description: "", sku: "", price: "", moq: "1", packingUnit: "كرتون", stock: "100", imageUrl: "" });
                   setIsAddModalOpen(true);
                 }}
                 className="btn-amber px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer flex items-center gap-2"
@@ -391,6 +411,7 @@ export default function WholesalerClient({
                               moq: product.moq.toString(),
                               packingUnit: product.packingUnit,
                               stock: product.stock.toString(),
+                              imageUrl: product.imageUrl || "",
                             });
                           }}
                           className="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 rounded-xl text-xs font-bold cursor-pointer flex items-center justify-center gap-1.5 transition-colors"
@@ -469,21 +490,30 @@ export default function WholesalerClient({
                         <p className="text-xs font-black text-emerald-400">{order.total.toLocaleString()} ر.ي</p>
                       </div>
 
-                      <div>
-                        <p className="text-[10px] text-slate-400 font-bold mb-1">حالة الطلب الحالية</p>
-                        <select
-                          value={order.status}
-                          disabled={loadingId === order.id}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-bold focus:outline-none focus:border-amber-500 cursor-pointer"
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">حالة الطلب الحالية</p>
+                          <select
+                            value={order.status}
+                            disabled={loadingId === order.id}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-bold focus:outline-none focus:border-amber-500 cursor-pointer"
+                          >
+                            <option value="PENDING">🟡 بانتظار القبول</option>
+                            <option value="ACCEPTED">🟢 تم قبول الطلب</option>
+                            <option value="PREPARING">🟣 قيد التحضير</option>
+                            <option value="SHIPPED">🚚 تم الشحن للتوصيل</option>
+                            <option value="DELIVERED">✅ تم التسليم بنجاح</option>
+                            <option value="CANCELLED">❌ إلغاء الطلب</option>
+                          </select>
+                        </div>
+                        <button
+                          onClick={() => setSelectedInvoiceOrder(order)}
+                          className="mt-4 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                         >
-                          <option value="PENDING">🟡 بانتظار القبول</option>
-                          <option value="ACCEPTED">🟢 تم قبول الطلب</option>
-                          <option value="PREPARING">🟣 قيد التحضير</option>
-                          <option value="SHIPPED">🚚 تم الشحن للتوصيل</option>
-                          <option value="DELIVERED">✅ تم التسليم بنجاح</option>
-                          <option value="CANCELLED">❌ إلغاء الطلب</option>
-                        </select>
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>الفاتورة الضريبية</span>
+                        </button>
                       </div>
                     </div>
 
@@ -639,6 +669,29 @@ export default function WholesalerClient({
                 </div>
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 text-right">صورة المنتج (رابط أو رفع من الجهاز)</label>
+                <div className="space-y-2">
+                  <input
+                    name="imageUrl"
+                    type="url"
+                    placeholder="https://example.com/product.jpg"
+                    value={formData.imageUrl}
+                    onChange={handleInputChange}
+                    className="w-full glass-input rounded-xl px-4 py-2.5 text-sm font-mono text-xs"
+                  />
+                  <div className="flex items-center gap-3">
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold cursor-pointer transition border border-slate-700">
+                      <span>📁 اختر صورة من الجهاز</span>
+                      <input type="file" accept="image/*" onChange={handleImageFileChange} className="hidden" />
+                    </label>
+                    {formData.imageUrl && (
+                      <span className="text-[11px] text-emerald-400 font-bold">✓ تم اختيار الصورة</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-3.5 btn-amber rounded-xl text-slate-950 font-bold text-xs cursor-pointer mt-4"
@@ -648,6 +701,14 @@ export default function WholesalerClient({
             </form>
           </div>
         </div>
+      )}
+
+      {/* Tax Invoice Modal */}
+      {selectedInvoiceOrder && (
+        <TaxInvoiceModal
+          order={selectedInvoiceOrder}
+          onClose={() => setSelectedInvoiceOrder(null)}
+        />
       )}
 
     </div>

@@ -24,6 +24,7 @@ import {
 } from "@/components/Icons";
 import { deauthenticateUser, submitOrder, addTransaction } from "@/app/actions";
 import { useToast } from "@/components/Toast";
+import { TaxInvoiceModal } from "@/components/TaxInvoiceModal";
 
 interface Product {
   id: string;
@@ -127,6 +128,7 @@ export default function MarketplaceClient({
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [orderNote, setOrderNote] = useState("");
   const [isOrderReviewOpen, setIsOrderReviewOpen] = useState(false);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<any | null>(null);
   
   // Wallet Top-up State
   const [depositAmount, setDepositAmount] = useState("");
@@ -529,14 +531,30 @@ export default function MarketplaceClient({
                       key={prod.id} 
                       className="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group border border-slate-800/80 hover:border-amber-500/30 transition-all duration-300"
                     >
-                      {/* Product Card Top Badge Area */}
-                      <div className="p-4 bg-slate-900/40 relative border-b border-slate-800/60 flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg">
-                          {prod.store.name}
-                        </span>
-                        <span className="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md">
-                          {prod.category?.name || "عام"}
-                        </span>
+                      {/* Product Image or SVG Banner */}
+                      <div className="h-40 w-full bg-slate-900/80 relative overflow-hidden flex items-center justify-center border-b border-slate-800/60">
+                        {prod.imageUrl ? (
+                          <img
+                            src={prod.imageUrl}
+                            alt={prod.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center p-4 text-slate-600 group-hover:text-amber-500/70 transition-colors">
+                            <Package className="w-12 h-12 mb-1" />
+                            <span className="text-[10px] text-slate-500">{prod.store.name}</span>
+                          </div>
+                        )}
+
+                        {/* Badges Overlay */}
+                        <div className="absolute top-3 right-3 left-3 flex items-center justify-between pointer-events-none">
+                          <span className="text-[11px] font-bold text-blue-300 bg-slate-950/80 backdrop-blur-md border border-blue-500/30 px-2.5 py-1 rounded-lg">
+                            {prod.store.name}
+                          </span>
+                          <span className="text-[10px] text-amber-300 bg-slate-950/80 backdrop-blur-md border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">
+                            {prod.category?.name || "عام"}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
@@ -646,31 +664,40 @@ export default function MarketplaceClient({
                         <p className="text-sm font-black text-amber-400">{order.total.toLocaleString()} ر.ي</p>
                       </div>
 
-                      <div className="space-y-1">
-                        <p className="text-[10px] text-slate-400 font-bold">حالة الطلب</p>
-                        <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg border ${
-                          order.status === "DELIVERED"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : order.status === "PENDING"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse"
-                            : order.status === "CANCELLED"
-                            ? "bg-red-500/10 text-red-400 border-red-500/20"
-                            : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                        }`}>
-                          {order.status === "PENDING" && <Clock className="w-3.5 h-3.5" />}
-                          {order.status === "ACCEPTED" && <CheckCircle className="w-3.5 h-3.5" />}
-                          {order.status === "PREPARING" && <Package className="w-3.5 h-3.5" />}
-                          {order.status === "SHIPPED" && <Truck className="w-3.5 h-3.5" />}
-                          {order.status === "DELIVERED" && <CheckCircle className="w-3.5 h-3.5" />}
-                          <span>
-                            {order.status === "PENDING" && "بانتظار قبول الموزع"}
-                            {order.status === "ACCEPTED" && "تم قبول الطلب"}
-                            {order.status === "PREPARING" && "جاري التحضير بالمستودع"}
-                            {order.status === "SHIPPED" && "قيد الشحن والتوصيل"}
-                            {order.status === "DELIVERED" && "تم التسليم بنجاح"}
-                            {order.status === "CANCELLED" && "ملغي"}
+                      <div className="flex items-center gap-3">
+                        <div className="space-y-1">
+                          <p className="text-[10px] text-slate-400 font-bold">حالة الطلب</p>
+                          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg border ${
+                            order.status === "DELIVERED"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : order.status === "PENDING"
+                              ? "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse"
+                              : order.status === "CANCELLED"
+                              ? "bg-red-500/10 text-red-400 border-red-500/20"
+                              : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                          }`}>
+                            {order.status === "PENDING" && <Clock className="w-3.5 h-3.5" />}
+                            {order.status === "ACCEPTED" && <CheckCircle className="w-3.5 h-3.5" />}
+                            {order.status === "PREPARING" && <Package className="w-3.5 h-3.5" />}
+                            {order.status === "SHIPPED" && <Truck className="w-3.5 h-3.5" />}
+                            {order.status === "DELIVERED" && <CheckCircle className="w-3.5 h-3.5" />}
+                            <span>
+                              {order.status === "PENDING" && "بانتظار قبول الموزع"}
+                              {order.status === "ACCEPTED" && "تم قبول الطلب"}
+                              {order.status === "PREPARING" && "جاري التحضير بالمستودع"}
+                              {order.status === "SHIPPED" && "قيد الشحن والتوصيل"}
+                              {order.status === "DELIVERED" && "تم التسليم بنجاح"}
+                              {order.status === "CANCELLED" && "ملغي"}
+                            </span>
                           </span>
-                        </span>
+                        </div>
+
+                        <button
+                          onClick={() => setSelectedInvoiceOrder(order)}
+                          className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <span>الفاتورة الضريبية</span>
+                        </button>
                       </div>
                     </div>
 
@@ -944,6 +971,14 @@ export default function MarketplaceClient({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Tax Invoice Modal */}
+      {selectedInvoiceOrder && (
+        <TaxInvoiceModal
+          order={selectedInvoiceOrder}
+          onClose={() => setSelectedInvoiceOrder(null)}
+        />
       )}
 
     </div>

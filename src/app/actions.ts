@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { login, logout, getCurrentUser, type UserSession } from "@/lib/auth";
 import { hashPassword } from "@/lib/crypto";
+import { notifyOrderStatusChange, notifyNewOrderSubmitted } from "@/lib/notifications";
 
 type Role = "ADMIN" | "WHOLESALER" | "RETAILER";
 type PaymentMethod = "CASH_ON_DELIVERY" | "WALLET" | "BANK_TRANSFER" | "MOBILE_WALLET";
@@ -31,6 +32,7 @@ interface ProductFormData {
   moq: number;
   packingUnit: string;
   stock: number;
+  imageUrl?: string | null;
   categoryId?: string | null;
 }
 
@@ -95,6 +97,7 @@ function sanitizeProductPayload(formData: ProductFormData) {
     moq,
     packingUnit,
     stock,
+    imageUrl: formData.imageUrl?.trim() || null,
     categoryId: formData.categoryId || null,
   };
 }
@@ -296,6 +299,19 @@ export async function changeOrderStatus(orderId: string, status: string) {
     });
   });
 
+  try {
+    const updatedOrder = await db.order.findUnique({
+      where: { id: orderId },
+      include: { retailer: true, items: { include: { product: { include: { store: true } } } } },
+    });
+    if (updatedOrder) {
+      const storeName = updatedOrder.items[0]?.product?.store?.name || "سوق الجملة الذكي";
+      await notifyOrderStatusChange(orderId, status, updatedOrder.retailer.name, storeName);
+    }
+  } catch (e) {
+    console.warn("Notification error:", e);
+  }
+
   revalidatePath("/wholesaler/dashboard");
   revalidatePath("/retailer/marketplace");
   revalidatePath("/admin/dashboard");
@@ -439,6 +455,11 @@ export async function submitOrder(
         })
       )
     );
+    try {
+      await notifyNewOrderSubmitted(order.id, total, "متجر الجملة", user.name);
+    } catch (e) {
+      console.warn("Notification dispatch warning:", e);
+    }
   });
 
   revalidatePath("/retailer/marketplace");
