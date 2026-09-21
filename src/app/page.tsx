@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authenticateUser } from "./actions";
 import "@/styles/variables.css";
 import { PasswordInput } from "@/components/PasswordInput";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Shield, Truck, Wallet, Building, ArrowUpRight, CheckCircle, Store, Users, ShoppingBag } from "@/components/Icons";
 
 export default async function LoginPage() {
@@ -28,10 +29,13 @@ export default async function LoginPage() {
         {/* Left Side: Brand Showcase & Features */}
         <div className="lg:col-span-6 flex flex-col justify-center space-y-6 text-right">
           
-          {/* Platform Status Badge */}
-          <div className="inline-flex items-center space-x-2 space-x-reverse bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full self-start backdrop-blur-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span className="text-xs font-bold text-amber-400">سوق الجملة الذكي — منصة B2B المعتمدة</span>
+          {/* Platform Status Badge & Theme Toggle */}
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="inline-flex items-center space-x-2 space-x-reverse bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full backdrop-blur-md">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span className="text-xs font-bold text-amber-400">سوق الجملة الذكي — منصة B2B المعتمدة</span>
+            </div>
+            <ThemeToggle />
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] text-white">

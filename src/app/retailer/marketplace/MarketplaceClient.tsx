@@ -25,6 +25,7 @@ import {
 import { deauthenticateUser, submitOrder, addTransaction } from "@/app/actions";
 import { useToast } from "@/components/Toast";
 import { TaxInvoiceModal } from "@/components/TaxInvoiceModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Product {
   id: string;
@@ -444,8 +445,9 @@ export default function MarketplaceClient({
             )}
           </button>
 
-          {/* User Info & Logout */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* User Info, Theme Toggle & Logout */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <ThemeToggle />
             <div className="hidden lg:flex flex-col text-right">
               <span className="text-xs font-bold text-slate-200">{user.name}</span>
               <span className="text-[10px] text-slate-400">{user.email}</span>

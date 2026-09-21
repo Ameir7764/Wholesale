@@ -5,6 +5,7 @@ import { registerUser } from "../actions";
 import { useToast } from "@/components/Toast";
 import { useRouter } from "next/navigation";
 import { Store, User, ArrowUpRight, Eye, EyeOff } from "@/components/Icons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function RegisterClient() {
   const [formData, setFormData] = useState({
@@ -67,9 +68,12 @@ export default function RegisterClient() {
       <div className="w-full max-w-xl glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-2xl border border-slate-800/80 z-10 my-auto">
         <div className="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-emerald-500 via-amber-500 to-blue-500"></div>
 
-        <div className="mb-6 text-center">
-          <h2 className="text-3xl font-black tracking-tight text-white mb-1.5">إنشاء حساب جديد</h2>
-          <p className="text-xs text-slate-400">انضم إلى شبكة "سوق الجملة الذكي" وتواصل مع الآلاف مباشرة</p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-white mb-1">إنشاء حساب جديد</h2>
+            <p className="text-xs text-slate-400">انضم إلى شبكة "سوق الجملة الذكي" وتواصل مع الآلاف مباشرة</p>
+          </div>
+          <ThemeToggle />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

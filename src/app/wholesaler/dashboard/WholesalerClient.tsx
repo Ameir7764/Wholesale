@@ -24,6 +24,7 @@ import {
 import { deauthenticateUser, addProduct, editProduct, removeProduct, changeOrderStatus } from "@/app/actions";
 import { useToast } from "@/components/Toast";
 import { TaxInvoiceModal } from "@/components/TaxInvoiceModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Product {
   id: string;
@@ -283,15 +284,18 @@ export default function WholesalerClient({
             </button>
           </div>
 
-          <form action={deauthenticateUser} className="shrink-0">
-            <button 
-              type="submit"
-              className="p-2.5 bg-slate-900/90 hover:bg-red-500/10 text-slate-400 hover:text-red-400 border border-slate-800 rounded-xl transition-all cursor-pointer"
-              title="تسجيل خروج"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </form>
+          <div className="flex items-center gap-3 shrink-0">
+            <ThemeToggle />
+            <form action={deauthenticateUser}>
+              <button 
+                type="submit"
+                className="p-2.5 bg-slate-900/90 hover:bg-red-500/10 text-slate-400 hover:text-red-400 border border-slate-800 rounded-xl transition-all cursor-pointer"
+                title="تسجيل خروج"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 

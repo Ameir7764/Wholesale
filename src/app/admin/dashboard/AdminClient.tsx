@@ -21,6 +21,7 @@ import {
 } from "@/components/Icons";
 import { deauthenticateUser, toggleStoreVerification, toggleUserApproval, changeOrderStatus } from "@/app/actions";
 import { useToast } from "@/components/Toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Store {
   id: string;
@@ -220,15 +221,18 @@ export default function AdminClient({
             </button>
           </div>
 
-          <form action={deauthenticateUser} className="shrink-0">
-            <button 
-              type="submit"
-              className="p-2.5 bg-slate-900/90 hover:bg-red-500/10 text-slate-400 hover:text-red-400 border border-slate-800 rounded-xl transition-all cursor-pointer"
-              title="تسجيل خروج"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </form>
+          <div className="flex items-center gap-3 shrink-0">
+            <ThemeToggle />
+            <form action={deauthenticateUser}>
+              <button 
+                type="submit"
+                className="p-2.5 bg-slate-900/90 hover:bg-red-500/10 text-slate-400 hover:text-red-400 border border-slate-800 rounded-xl transition-all cursor-pointer"
+                title="تسجيل خروج"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
